@@ -41,4 +41,13 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    const COMPANY = 0;
+    const CUSTOMER = 1;
+    const DELIVERY = 2;
+
+    public function findForPassport($username)
+    {
+        return $this->where('mobile_number', $username)->first();
+    }
 }
