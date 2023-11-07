@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RefreshTokenRequest;
 use Closure;
@@ -23,6 +22,7 @@ class AuthController extends Controller
 
         });
     }
+
     public function login(LoginRequest $loginRequest)
     {
         $credential = [
@@ -31,7 +31,10 @@ class AuthController extends Controller
         ];
 
         if (!auth()->attempt($credential)) {
-            return response()->json('wrong username or password');
+            return response()->json([
+                'message' => 'wrong username or password',
+                'data' => null
+            ]);
         }
 
         $user = Auth::user();
@@ -74,7 +77,10 @@ class AuthController extends Controller
             'branch_id' => $branchId
         ]);
 
-        return response()->json($response);
+        return response()->json([
+            'message' => '',
+            'data' => $response
+        ]);
     }
 
     public function refreshToken(RefreshTokenRequest $refreshTokenRequest)
@@ -93,7 +99,10 @@ class AuthController extends Controller
         }
 
         $result = json_decode($response->getBody(), true);
-        return response()->json($result);
+        return response()->json([
+            'message' => null,
+            'data' => $result
+        ]);
     }
 
     public function logout(Request $request)
@@ -101,7 +110,10 @@ class AuthController extends Controller
         $token = $request->user()->token();
         $token->revoke();
 
-        return response()->json('successfully loged out');
+        return response()->json([
+            'message' => 'successfully logged out',
+            'data' => null
+        ]);
     }
 
 }
