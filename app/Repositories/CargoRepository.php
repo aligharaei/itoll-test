@@ -72,4 +72,16 @@ class CargoRepository
         }
         return false;
     }
+
+    public function changeStatus($cargoId, $status)
+    {
+        $cargo = Cargo::find($cargoId);
+        if ($cargo) {
+            $cargo->status = $status;
+            $cargo->save();
+
+            return true;
+        }
+        return false;
+    }
 }

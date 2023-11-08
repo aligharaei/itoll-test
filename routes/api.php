@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DeliveryController;
 use Illuminate\Support\Facades\Route;
@@ -33,3 +34,7 @@ Route::group(['prefix' => 'delivery' ,'middleware' => ['auth:api', 'scope:delive
     Route::post('cargos/accept', [DeliveryController::class, 'acceptCargo']);
 });
 
+Route::group(['prefix' => 'company' ,'middleware' => ['auth:api', 'scope:company']], function () {
+    Route::resource('cargos', CompanyController::class)->only(['index']);
+    Route::post('cargos/make-visible', [CompanyController::class, 'makeCargosVisible']);
+});
