@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DeliveryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,3 +27,9 @@ Route::group(['prefix' => 'customer' ,'middleware' => ['auth:api', 'scope:custom
     Route::resource('cargos', CustomerController::class)->only(['show', 'store']);
     Route::post('cargos/cancel', [CustomerController::class, 'cancelDeliveryRequest']);
 });
+
+Route::group(['prefix' => 'delivery' ,'middleware' => ['auth:api', 'scope:delivery']], function () {
+    Route::resource('cargos', DeliveryController::class)->only(['index']);
+    Route::post('cargos/accept', [DeliveryController::class, 'acceptCargo']);
+});
+

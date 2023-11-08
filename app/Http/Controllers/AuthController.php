@@ -55,7 +55,7 @@ class AuthController extends Controller
         return $this->getTokenAndRefreshToken(request('mobile_number'), request('password'), $scope);
     }
 
-    public function getTokenAndRefreshToken($mobile, $password, $scope, $branchId = null)
+    public function getTokenAndRefreshToken($mobile, $password, $scope)
     {
         $oClient = OClient::where('password_client', 1)->first();
         $http = new Client();
@@ -73,8 +73,7 @@ class AuthController extends Controller
 
         $result = json_decode((string)$response->getBody(), true);
         $response = array_merge($result, [
-            'scope' => $scope,
-            'branch_id' => $branchId
+            'scope' => $scope
         ]);
 
         return response()->json([

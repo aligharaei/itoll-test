@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserRepository
 {
-    public function getAuth()
+    public function getAuthUser()
     {
         return Auth::user();
     }

@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Auth;
 
 class CargoRepository
 {
-    public function All()
+    public function all()
     {
         return Cargo::all();
     }
 
-    public function store($cargoData)
+    public function addNewDeliveryRequest($cargoData)
     {
         return Cargo::create([
             'origin_lat' => $cargoData['origin_lat'],
@@ -40,21 +40,36 @@ class CargoRepository
         return false;
     }
 
-    public function readyToAccept()
+    public function getReadyToAccept()
     {
         return Cargo::where('status', Cargo::READY_TO_DELIVER)->get();
     }
 
-    public function cancellation($trackingCode)
+    public function cancellation($trackingCode, $customerId)
     {
         $cargo = Cargo::where('tracking_code', $trackingCode)->first();
-        if ($cargo && $cargo->status == Cargo::READY_TO_DELIVER) {
+        if ($cargo->customer_id != $customerId) {
+            return false;
+        }
+        if ($cargo && ($cargo->status == Cargo::READY_TO_DELIVER || $cargo->status == Cargo::NEW_DELIVERY_REQUEST)) {
             $cargo->status = Cargo::CANCELED;
             $cargo->save();
 
             return true;
         }
+        return false;
+    }
 
+    public function acceptCargo($cargoId, $deliveryId)
+    {
+        $cargo = Cargo::find($cargoId);
+        if ($cargo && $cargo->status == Cargo::READY_TO_DELIVER && $cargo->delivery_id == null) {
+            $cargo->status = Cargo::ACCEPT_BY_DELIVERY;
+            $cargo->delivery_id = $deliveryId;
+            $cargo->save();
+
+            return true;
+        }
         return false;
     }
 }

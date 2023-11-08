@@ -27,8 +27,10 @@ class Cargo extends Model
         'tracking_code'
     ];
 
-    const READY_TO_DELIVER = 0;
-    const ORIGIN_GET = 1;
+    const NEW_DELIVERY_REQUEST = 0;
+    const READY_TO_DELIVER = 1;
+    const ACCEPT_BY_DELIVERY = 2;
+    const ORIGIN_PICKUP = 3;
     const CANCELED = 10;
 
     static function trackCodeGenerator($length = 6)

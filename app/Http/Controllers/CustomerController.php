@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddCargoRequest;
 use App\Http\Requests\CancelCargoRequest;
-use App\Models\Cargo;
 use App\Repositories\CargoRepository;
 use App\Repositories\UserRepository;
 
@@ -36,7 +35,7 @@ class CustomerController extends Controller
 
     public function store(AddCargoRequest $addCargoRequest)
     {
-        $cargo = $this->cargoRepository->store($addCargoRequest->all());
+        $cargo = $this->cargoRepository->addNewDeliveryRequest($addCargoRequest->all());
 
         if (!$cargo) {
             return response()->json([
@@ -54,7 +53,8 @@ class CustomerController extends Controller
 
     public function cancelDeliveryRequest(CancelCargoRequest $cancelCargoRequest)
     {
-        $cargo = $this->cargoRepository->cancellation($cancelCargoRequest->tracking_code);
+        $customer = $this->userRepository->getAuthUser();
+        $cargo = $this->cargoRepository->cancellation($cancelCargoRequest->tracking_code, $customer->id);
         if ($cargo) {
             return response()->json([
                 'message' => 'cargo canceled successfully',
