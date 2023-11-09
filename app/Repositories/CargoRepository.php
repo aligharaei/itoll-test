@@ -3,7 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Cargo;
+use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CargoRepository
 {
@@ -39,6 +41,7 @@ class CargoRepository
 
         return false;
     }
+
     public function getCargoStatus($cargoId)
     {
         $cargo = Cargo::find($cargoId);
@@ -72,19 +75,40 @@ class CargoRepository
     public function acceptCargo($cargoId, $deliveryId)
     {
         $cargo = Cargo::find($cargoId);
-        if ($cargo && $cargo->status == Cargo::READY_TO_DELIVER && $cargo->delivery_id == null) {
-            $cargo->status = Cargo::ACCEPT_BY_DELIVERY;
-            $cargo->delivery_id = $deliveryId;
-            $cargo->save();
 
-            return true;
+        if ($cargo && $cargo->status == Cargo::READY_TO_DELIVER && $cargo->delivery_id == null) {
+
+            DB::beginTransaction();
+
+            try {
+                DB::table('users')->where('id', $deliveryId)->lockForUpdate()->get();
+                DB::table('cargos')->where('id', $cargoId)->lockForUpdate()->get();
+
+
+                if ($cargo->status === Cargo::ACCEPT_BY_DELIVERY) {
+                    DB::rollBack();
+                    return false;
+                }
+
+                $cargo->status = Cargo::ACCEPT_BY_DELIVERY;
+                $cargo->delivery_id = $deliveryId;
+                $cargo->save();
+
+                DB::commit();
+
+                return true;
+            } catch (Exception $e) {
+
+                DB::rollBack();
+                return false;
+            }
         }
         return false;
     }
 
     public function changeDeliveryStatus($cargoId, $deliveryId, $status)
     {
-        if (in_array($status,[Cargo::NEW_DELIVERY_REQUEST, Cargo::READY_TO_DELIVER, Cargo::CANCELED])){
+        if (in_array($status, [Cargo::NEW_DELIVERY_REQUEST, Cargo::READY_TO_DELIVER, Cargo::CANCELED])) {
             return false;
         }
         $cargo = Cargo::find($cargoId);
