@@ -32,6 +32,7 @@ Route::group(['prefix' => 'customer' ,'middleware' => ['auth:api', 'scope:custom
 Route::group(['prefix' => 'delivery' ,'middleware' => ['auth:api', 'scope:delivery']], function () {
     Route::resource('cargos', DeliveryController::class)->only(['index']);
     Route::post('cargos/accept', [DeliveryController::class, 'acceptCargo']);
+    Route::post('cargos/changeStatus', [DeliveryController::class, 'changeDeliveryStatus']);
 });
 
 Route::group(['prefix' => 'company' ,'middleware' => ['auth:api', 'scope:company']], function () {

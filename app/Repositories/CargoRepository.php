@@ -39,6 +39,15 @@ class CargoRepository
 
         return false;
     }
+    public function getCargoStatus($cargoId)
+    {
+        $cargo = Cargo::find($cargoId);
+        if ($cargo) {
+            return $cargo->status;
+        }
+
+        return false;
+    }
 
     public function getReadyToAccept()
     {
@@ -73,15 +82,23 @@ class CargoRepository
         return false;
     }
 
-    public function changeStatus($cargoId, $status)
+    public function changeDeliveryStatus($cargoId, $deliveryId, $status)
     {
+        if ($status == Cargo::NEW_DELIVERY_REQUEST || $status == Cargo::READY_TO_DELIVER || $status == Cargo::CANCELED) {
+            return false;
+        }
         $cargo = Cargo::find($cargoId);
-        if ($cargo) {
+        if ($cargo && $cargo->delivery_id && $cargo->delivery_id == $deliveryId) {
             $cargo->status = $status;
             $cargo->save();
 
             return true;
         }
-        return false;
+    }
+
+    public function getDeliveriesCargos($deliveryId)
+    {
+        $cargos = Cargo::where('delivery_id', $deliveryId)->get();
+        return $cargos;
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AcceptCargoRequest;
+use App\Http\Requests\ChangeDeliveryStatusRequest;
+use App\Models\Cargo;
 use App\Repositories\CargoRepository;
 use App\Repositories\UserRepository;
 
@@ -38,6 +40,25 @@ class DeliveryController extends Controller
         }
         return response()->json([
             'message' => "Cargo acceptance failed!",
+            'data' => null
+        ],400);
+    }
+
+    public function changeDeliveryStatus(ChangeDeliveryStatusRequest $changeDeliveryStatusRequest)
+    {
+        $delivery = $this->userRepository->getAuthUser();
+        $cargo_id = $changeDeliveryStatusRequest->cargo_id;
+        $changeStatus = $this->cargoRepository->changeDeliveryStatus($cargo_id, $delivery->id, $changeDeliveryStatusRequest->status);
+        $status = Cargo::translateStatus($this->cargoRepository->getCargoStatus($cargo_id));
+
+        if ($changeStatus) {
+            return response()->json([
+                'message' => "The Cargo's status changed to '$status' ",
+                'data' => null
+            ]);
+        }
+        return response()->json([
+            'message' => "Cargo change status failed!",
             'data' => null
         ],400);
     }

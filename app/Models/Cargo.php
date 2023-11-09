@@ -9,6 +9,14 @@ class Cargo extends Model
 {
     use HasFactory;
 
+    const NEW_DELIVERY_REQUEST = 0;
+    const READY_TO_DELIVER = 1;
+    const ACCEPT_BY_DELIVERY = 2;
+    const ORIGIN_PICKUP = 3;
+    const ARRIVE_TO_DESTINATION = 4;
+    const COMPLETE = 5;
+    const CANCELED = 10;
+
     protected $table = 'cargos';
     protected $fillable = [
         'origin_lat',
@@ -27,12 +35,6 @@ class Cargo extends Model
         'tracking_code'
     ];
 
-    const NEW_DELIVERY_REQUEST = 0;
-    const READY_TO_DELIVER = 1;
-    const ACCEPT_BY_DELIVERY = 2;
-    const ORIGIN_PICKUP = 3;
-    const CANCELED = 10;
-
     static function trackCodeGenerator($length = 6)
     {
         $random = "";
@@ -46,6 +48,29 @@ class Cargo extends Model
         }
 
         return $random;
+
+    }
+
+    static function translateStatus($status)
+    {
+        switch ($status) {
+            case Cargo::NEW_DELIVERY_REQUEST:
+                return 'new delivery request';
+            case Cargo::READY_TO_DELIVER:
+                return 'ready to deliver';
+            case Cargo::ACCEPT_BY_DELIVERY;
+                return 'accept by delivery';
+            case Cargo::ORIGIN_PICKUP:
+                return 'picked up from origin';
+            case Cargo::ARRIVE_TO_DESTINATION:
+                return 'delivery arrived to destination';
+            case Cargo::COMPLETE:
+                return 'cargo successfully delivered';
+            case Cargo::CANCELED:
+                return 'cargo canceled';
+            default:
+                echo 'unknown status';
+        }
 
     }
 }
