@@ -38,3 +38,5 @@ Route::group(['prefix' => 'company' ,'middleware' => ['auth:api', 'scope:company
     Route::resource('cargos', CompanyController::class)->only(['index']);
     Route::post('cargos/make-visible', [CompanyController::class, 'makeCargosVisible']);
 });
+
+//Route::webhooks('webhook-receiving-url');
