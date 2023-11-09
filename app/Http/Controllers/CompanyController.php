@@ -27,9 +27,9 @@ class CompanyController extends Controller
             'data' => $cargos
         ]);
     }
-    public function makeCargosVisible(VisibleCargoRequest $visibleCargoRequest)
+    public function makeCargoVisible(VisibleCargoRequest $visibleCargoRequest)
     {
-        $visible = $this->cargoRepository->changeStatus($visibleCargoRequest->cargo_id, Cargo::READY_TO_DELIVER);
+        $visible = $this->cargoRepository->makeVisible($visibleCargoRequest->cargo_id, Cargo::READY_TO_DELIVER);
         if ($visible) {
             return response()->json([
                 'message' => 'the cargo selected is visible to deliveries',

@@ -84,7 +84,7 @@ class CargoRepository
 
     public function changeDeliveryStatus($cargoId, $deliveryId, $status)
     {
-        if ($status == Cargo::NEW_DELIVERY_REQUEST || $status == Cargo::READY_TO_DELIVER || $status == Cargo::CANCELED) {
+        if (in_array($status,[Cargo::NEW_DELIVERY_REQUEST, Cargo::READY_TO_DELIVER, Cargo::CANCELED])){
             return false;
         }
         $cargo = Cargo::find($cargoId);
@@ -96,9 +96,15 @@ class CargoRepository
         }
     }
 
-    public function getDeliveriesCargos($deliveryId)
+    public function makeVisible($cargoId, $status)
     {
-        $cargos = Cargo::where('delivery_id', $deliveryId)->get();
-        return $cargos;
+        $cargo = Cargo::find($cargoId);
+        if ($cargo && $cargo->delivery_id == null) {
+            $cargo->status = $status;
+            $cargo->save();
+
+            return true;
+        }
+        return false;
     }
 }
